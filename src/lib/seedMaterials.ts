@@ -60,3 +60,20 @@ export function mergeMaterialsByEnglish(existing: Material[], incoming: Material
     duplicateCount: incoming.length - additions.length,
   };
 }
+
+export function shouldAutoBackfillSeedMaterials(existing: Material[]): boolean {
+  if (existing.length === 0 || existing.length > 30) {
+    return false;
+  }
+
+  const sampleIds = new Set(sampleMaterials.map((material) => material.id));
+  const sampleEnglish = new Set(sampleMaterials.map((material) => normalizeEnglish(material.en)));
+  const sampleMatches = existing.filter((material) => {
+    return sampleIds.has(material.id) || sampleEnglish.has(normalizeEnglish(material.en));
+  }).length;
+
+  // V1 users may already have the compact 10-row demo library in IndexedDB.
+  // In that case we backfill the large v2 seed library once, while still
+  // de-duping by English so user-created rows are preserved.
+  return sampleMatches >= Math.min(8, existing.length);
+}

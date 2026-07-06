@@ -1,4 +1,4 @@
-const CACHE_NAME = "speakloop-shell-v3";
+const CACHE_NAME = "speakloop-shell-v4";
 const BASE_PATH = new URL(self.registration.scope).pathname.replace(/\/$/, "");
 const withBase = (path) => `${BASE_PATH}${path}`;
 const APP_ROOT_URL = withBase("/");

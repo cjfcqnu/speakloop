@@ -4,7 +4,12 @@ import { nowIso, toDateKey, yesterdayKey } from "../lib/date";
 import { createDailyReview } from "../lib/recap";
 import { isDueToday, updateReviewSchedule } from "../lib/review";
 import { createId } from "../lib/id";
-import { loadSeedMaterials, mergeMaterialsByEnglish, normalizeMaterial } from "../lib/seedMaterials";
+import {
+  loadSeedMaterials,
+  mergeMaterialsByEnglish,
+  normalizeMaterial,
+  shouldAutoBackfillSeedMaterials,
+} from "../lib/seedMaterials";
 import { defaultPracticeSettings, loadPracticeSettings, savePracticeSettings } from "../lib/settings";
 import type {
   AudioBlobRecord,
@@ -17,7 +22,8 @@ import type {
 } from "../types";
 
 const DATA_VERSION_KEY = "speakloop:data-version";
-const CURRENT_DATA_VERSION = "2";
+const SEED_BACKFILL_KEY = "speakloop:seed-materials-v2-backfilled";
+const CURRENT_DATA_VERSION = "3";
 
 type AppDataState = {
   materials: Material[];
@@ -114,11 +120,26 @@ export function useAppData() {
       if (materials.length === 0) {
         materials = await loadSeedMaterials();
         await localDb.saveMaterials(materials);
+        if (materials.length >= 1000) {
+          localStorage.setItem(SEED_BACKFILL_KEY, "true");
+        }
       } else {
         const migrated = materials.map(migrateMaterial);
         if (JSON.stringify(migrated) !== JSON.stringify(materials)) {
           await localDb.saveMaterials(migrated);
           materials = migrated;
+        }
+
+        if (!localStorage.getItem(SEED_BACKFILL_KEY) && shouldAutoBackfillSeedMaterials(materials)) {
+          const seedMaterials = await loadSeedMaterials();
+          if (seedMaterials.length >= 1000) {
+            const { additions } = mergeMaterialsByEnglish(materials, seedMaterials);
+            if (additions.length) {
+              await localDb.saveMaterials(additions);
+              materials = [...materials, ...additions];
+            }
+            localStorage.setItem(SEED_BACKFILL_KEY, "true");
+          }
         }
       }
 
