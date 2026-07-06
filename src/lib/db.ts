@@ -10,7 +10,7 @@ type StoreMap = {
 };
 
 const DB_NAME = "speakloop-db";
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const LOCAL_PREFIX = "speakloop:";
 
 let dbPromise: Promise<IDBDatabase | null> | null = null;
@@ -214,12 +214,14 @@ export const localDb = {
   saveMaterials: (materials: Material[]) => putMany("materials", materials),
   getPracticeRecords: () => getAll("practiceRecords"),
   savePracticeRecord: (record: PracticeRecord) => putOne("practiceRecords", record),
+  deletePracticeRecord: (id: string) => deleteOne("practiceRecords", id),
   getReviewSchedules: () => getAll("reviewSchedules"),
   getReviewSchedule: (materialId: string) => getOne("reviewSchedules", materialId),
   saveReviewSchedule: (schedule: ReviewSchedule) => putOne("reviewSchedules", schedule),
   getDailyReviews: () => getAll("dailyReviews"),
   getDailyReview: (date: string) => getOne("dailyReviews", date),
   saveDailyReview: (review: DailyReview) => putOne("dailyReviews", review),
+  deleteDailyReview: (date: string) => deleteOne("dailyReviews", date),
   saveAudioBlob: (record: AudioBlobRecord) => putOne("audioBlobs", record),
   getAudioBlob: (key: string) => getOne("audioBlobs", key),
   deleteAudioBlob: (key: string) => deleteOne("audioBlobs", key),

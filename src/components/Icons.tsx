@@ -14,7 +14,11 @@ type IconName =
   | "check"
   | "search"
   | "library"
-  | "list";
+  | "list"
+  | "chart"
+  | "trash"
+  | "arrowRight"
+  | "rotate";
 
 const paths: Record<IconName, string> = {
   home: "M4 10.8 12 4l8 6.8V20a1 1 0 0 1-1 1h-5v-6h-4v6H5a1 1 0 0 1-1-1z",
@@ -34,6 +38,10 @@ const paths: Record<IconName, string> = {
   search: "M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15z M16 16l5 5",
   library: "M4 5h16v4H4z M4 11h16v8H4z M8 15h8",
   list: "M8 6h13 M8 12h13 M8 18h13 M3 6h.01 M3 12h.01 M3 18h.01",
+  chart: "M4 19V5 M4 19h16 M8 16v-4 M12 16V8 M16 16v-7 M20 16v-2",
+  trash: "M4 7h16 M10 11v6 M14 11v6 M6 7l1 14h10l1-14 M9 7V4h6v3",
+  arrowRight: "M5 12h14 M13 6l6 6-6 6",
+  rotate: "M21 12a9 9 0 1 1-2.6-6.4 M21 4v6h-6",
 };
 
 export function Icon({ name, size = 20 }: { name: IconName; size?: number }) {

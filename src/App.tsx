@@ -8,8 +8,10 @@ import { MaterialsPage } from "./pages/Materials";
 import { MistakesPage } from "./pages/Mistakes";
 import { PracticePage } from "./pages/Practice";
 import { RecapPage } from "./pages/Recap";
+import { RecordDetailPage } from "./pages/RecordDetail";
 import { ReviewPage } from "./pages/Review";
 import { SettingsPage } from "./pages/Settings";
+import { StatisticsPage } from "./pages/Statistics";
 import { getBrowserCapabilities } from "./lib/capabilities";
 import { useAppData } from "./hooks/useAppData";
 
@@ -79,6 +81,7 @@ export default function App() {
         materials={data.materials}
         practiceRecords={data.practiceRecords}
         reviewSchedules={data.reviewSchedules}
+        appSettings={data.appSettings}
         navigate={route.navigate}
         savePractice={data.savePractice}
       />
@@ -122,6 +125,19 @@ export default function App() {
         markDailyReviewViewed={data.markDailyReviewViewed}
       />
     );
+  } else if (basePath === "/records") {
+    page = (
+      <RecordDetailPage
+        recordId={firstParam}
+        materials={data.materials}
+        practiceRecords={data.practiceRecords}
+        navigate={route.navigate}
+        getAudioBlob={data.getAudioBlob}
+        deletePracticeRecord={data.deletePracticeRecord}
+      />
+    );
+  } else if (basePath === "/statistics") {
+    page = <StatisticsPage materials={data.materials} practiceRecords={data.practiceRecords} />;
   } else if (basePath === "/settings") {
     page = (
       <SettingsPage
@@ -130,6 +146,9 @@ export default function App() {
         practiceRecords={data.practiceRecords}
         reviewSchedules={data.reviewSchedules}
         dailyReviews={data.dailyReviews}
+        appSettings={data.appSettings}
+        updatePracticeSettings={data.updatePracticeSettings}
+        importSeedMaterials={data.importSeedMaterials}
       />
     );
   } else {

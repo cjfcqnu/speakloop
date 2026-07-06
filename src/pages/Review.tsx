@@ -36,6 +36,7 @@ export function ReviewPage({
               key={material.id}
               material={material}
               latestRecord={getLatestRecord(material.id, practiceRecords)}
+              practiceRecords={practiceRecords}
               schedule={scheduleMap.get(material.id)}
               isMistake={mistakeIds.has(material.id)}
               onToggleFavorite={toggleFavorite}

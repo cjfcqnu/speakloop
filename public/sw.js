@@ -1,4 +1,4 @@
-const CACHE_NAME = "speakloop-shell-v2";
+const CACHE_NAME = "speakloop-shell-v3";
 const BASE_PATH = new URL(self.registration.scope).pathname.replace(/\/$/, "");
 const withBase = (path) => `${BASE_PATH}${path}`;
 const APP_ROOT_URL = withBase("/");
@@ -10,6 +10,7 @@ const APP_SHELL = [
   withBase("/icons/icon.svg"),
   withBase("/icons/icon-192.png"),
   withBase("/icons/icon-512.png"),
+  withBase("/data/seedMaterials.json"),
 ];
 
 function collectBuiltAssets(html) {

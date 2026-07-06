@@ -2,10 +2,12 @@ import type { Material, PracticeRecord, ReviewSchedule } from "../types";
 import { isDueToday } from "../lib/review";
 import { AudioControls } from "./AudioControls";
 import { Icon } from "./Icons";
+import { PronunciationSentence } from "./PronunciationSentence";
 
 export function MaterialCard({
   material,
   latestRecord,
+  practiceRecords = [],
   schedule,
   isMistake,
   onToggleFavorite,
@@ -13,12 +15,15 @@ export function MaterialCard({
 }: {
   material: Material;
   latestRecord?: PracticeRecord;
+  practiceRecords?: PracticeRecord[];
   schedule?: ReviewSchedule;
   isMistake?: boolean;
   onToggleFavorite: (materialId: string) => void;
   onPractice: (materialId: string) => void;
 }) {
   const due = isDueToday(schedule);
+  const materialRecords = practiceRecords.filter((record) => record.materialId === material.id);
+  const bestScore = materialRecords.length ? Math.max(...materialRecords.map((record) => record.score)) : undefined;
 
   return (
     <article className="material-card">
@@ -38,7 +43,7 @@ export function MaterialCard({
           <Icon name="star" />
         </button>
       </div>
-      <p className="sentence-en">{material.en}</p>
+      <PronunciationSentence material={material} compact />
       <p className="sentence-zh">{material.zh}</p>
       <div className="tag-row">
         {material.tags.map((tag) => (
@@ -46,8 +51,13 @@ export function MaterialCard({
         ))}
       </div>
       <AudioControls text={material.en} compact />
+      <div className="score-strip">
+        <span>{latestRecord ? `最近 ${latestRecord.score}` : "还没有练习记录"}</span>
+        <span>最高 {bestScore ?? "--"}</span>
+        <span>练习 {materialRecords.length}</span>
+      </div>
       <div className="card-footer">
-        <span>{latestRecord ? `最近得分 ${latestRecord.score}` : "还没有练习记录"}</span>
+        <span>{due ? `下次复习 ${schedule?.nextReviewDate}` : "自由练习，不设每日上限"}</span>
         <button className="primary-button" onClick={() => onPractice(material.id)} type="button">
           <Icon name="mic" />
           开始练习

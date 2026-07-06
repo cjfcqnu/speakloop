@@ -6,6 +6,7 @@ import { StatCard } from "../components/StatCard";
 import { formatDateLabel, yesterdayKey } from "../lib/date";
 import { deriveMistakeItems, getLatestRecord } from "../lib/mistakes";
 import { isDueToday } from "../lib/review";
+import { buildLearningStats } from "../lib/statistics";
 
 export function Dashboard({
   materials,
@@ -24,7 +25,7 @@ export function Dashboard({
 }) {
   const dueSchedules = reviewSchedules.filter(isDueToday);
   const mistakes = deriveMistakeItems(materials, practiceRecords);
-  const favoritesCount = materials.filter((material) => material.isFavorite).length;
+  const stats = buildLearningStats(materials, practiceRecords);
   const recentRecords = practiceRecords.slice(0, 5);
   const recentAverage = recentRecords.length
     ? Math.round(recentRecords.reduce((sum, record) => sum + record.score, 0) / recentRecords.length)
@@ -51,8 +52,8 @@ export function Dashboard({
       <section className="stats-grid">
         <StatCard label="今日待复习" value={dueSchedules.length} tone="teal" />
         <StatCard label="最近平均分" value={recentAverage} tone="blue" />
-        <StatCard label="已收藏" value={favoritesCount} tone="amber" />
-        <StatCard label="错题" value={mistakes.length} tone="red" />
+        <StatCard label="连续练习" value={`${stats.streakDays} 天`} tone="amber" />
+        <StatCard label="今日分钟" value={stats.todayMinutes} tone="red" />
       </section>
 
       {yesterdayReview ? (
@@ -91,9 +92,17 @@ export function Dashboard({
           <Icon name="alert" />
           错题本
         </button>
+        <button onClick={() => navigate("/statistics")} type="button">
+          <Icon name="chart" />
+          学习统计
+        </button>
         <button onClick={() => navigate("/favorites")} type="button">
           <Icon name="star" />
           收藏夹
+        </button>
+        <button onClick={() => navigate("/materials")} type="button">
+          <Icon name="book" />
+          自由学习
         </button>
       </section>
 
@@ -108,6 +117,7 @@ export function Dashboard({
           <MaterialCard
             material={recommended}
             latestRecord={getLatestRecord(recommended.id, practiceRecords)}
+            practiceRecords={practiceRecords}
             schedule={reviewSchedules.find((schedule) => schedule.materialId === recommended.id)}
             isMistake={mistakes.some((item) => item.material.id === recommended.id)}
             onToggleFavorite={toggleFavorite}
@@ -128,7 +138,7 @@ export function Dashboard({
                 <button
                   key={record.id}
                   className="record-row"
-                  onClick={() => navigate(`/practice/${record.materialId}`)}
+                  onClick={() => navigate(`/records/${record.id}`)}
                   type="button"
                 >
                   <span>{material?.en ?? "素材已删除"}</span>

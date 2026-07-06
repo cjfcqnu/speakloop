@@ -1,5 +1,13 @@
 export type Difficulty = "B1" | "B2" | "C1" | "C2";
 
+export type PronunciationNotes = {
+  stressWords: string[];
+  linking: { text: string; note: string }[];
+  weakForms: { text: string; note: string }[];
+  difficultSounds: { text: string; ipa?: string; note: string }[];
+  pauses: { after: string; note: string }[];
+};
+
 export type Material = {
   id: string;
   zh: string;
@@ -11,8 +19,20 @@ export type Material = {
   isFavorite: boolean;
   favoriteAddedAt?: string;
   mistakeDismissedAt?: string;
+  pronunciationNotes?: PronunciationNotes;
   createdAt: string;
   updatedAt: string;
+};
+
+export type ScoreDimensions = {
+  pronunciationAccuracy: number;
+  fluency: number;
+  speed: number;
+  pause: number;
+  completeness: number;
+  stress: number;
+  intonation: number;
+  linkingWeakForms: number;
 };
 
 export type PracticeRecord = {
@@ -27,6 +47,19 @@ export type PracticeRecord = {
   transcript?: string;
   audioBlobKey?: string;
   isReview?: boolean;
+  pronunciationAccuracy?: number;
+  fluency?: number;
+  speed?: number;
+  pause?: number;
+  completeness?: number;
+  stress?: number;
+  intonation?: number;
+  linkingWeakForms?: number;
+  wrongWords?: string[];
+  missingWords?: string[];
+  extraWords?: string[];
+  feedbackTips?: string[];
+  isEstimatedScore?: boolean;
 };
 
 export type ReviewSchedule = {
@@ -54,6 +87,12 @@ export type DailyReview = {
   mistakeMaterialIds?: string[];
   recommendedMaterialIds?: string[];
   viewedAt?: string;
+  commonWrongWords?: string[];
+  weakestScenario?: string;
+  weakestDimension?: keyof ScoreDimensions;
+  dimensionAverages?: Partial<ScoreDimensions>;
+  isStale?: boolean;
+  updatedAt?: string;
 };
 
 export type AudioBlobRecord = {
@@ -88,7 +127,20 @@ export type ScoreBreakdown = {
   accuracyScore: number;
   fluencyScore: number;
   completenessScore: number;
+  dimensions: ScoreDimensions;
+  wrongWords: string[];
+  missingWords: string[];
+  extraWords: string[];
+  feedbackTips: string[];
+  isEstimated: boolean;
   suggestion: string;
+};
+
+export type PracticeSettings = {
+  autoNextEnabled: boolean;
+  targetScore: number;
+  maxAttemptsPerSentence: number;
+  autoAdvanceDelaySeconds: number;
 };
 
 export type ImportPreviewItem = {

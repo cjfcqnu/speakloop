@@ -1,7 +1,18 @@
-import type { DailyReview, Material } from "../types";
+import type { DailyReview, Material, ScoreDimensions } from "../types";
 import { EmptyState } from "../components/EmptyState";
 import { Icon } from "../components/Icons";
 import { formatDateLabel } from "../lib/date";
+
+const DIMENSION_LABELS: Record<keyof ScoreDimensions, string> = {
+  pronunciationAccuracy: "发音准确",
+  fluency: "流利度",
+  speed: "语速",
+  pause: "停顿",
+  completeness: "完整度",
+  stress: "重音",
+  intonation: "语调",
+  linkingWeakForms: "连读/弱读",
+};
 
 function findMaterial(materials: Material[], id?: string): Material | undefined {
   return id ? materials.find((material) => material.id === id) : undefined;
@@ -33,7 +44,7 @@ export function RecapPage({
       <section className="page-title-row">
         <div>
           <h1>学习复盘</h1>
-          <p>第二天先看薄弱句子，再自由继续练习。</p>
+          <p>先看昨天的薄弱点，再自由继续练习。</p>
         </div>
       </section>
 
@@ -74,7 +85,37 @@ export function RecapPage({
             <div className="score-strip">
               <span>最高 {selected.highestScore ?? "--"}：{highest?.scenario ?? "未知"}</span>
               <span>最低 {selected.lowestScore ?? "--"}：{lowest?.scenario ?? "未知"}</span>
-              <span>新增收藏 {selected.favoriteAddedCount}</span>
+              <span>最弱场景 {selected.weakestScenario ?? "--"}</span>
+              <span>
+                最弱维度{" "}
+                {selected.weakestDimension ? DIMENSION_LABELS[selected.weakestDimension] : "--"}
+              </span>
+            </div>
+          </section>
+
+          <section className="section-block">
+            <div className="section-heading">
+              <h2>多维评分摘要</h2>
+            </div>
+            <div className="score-strip">
+              {selected.dimensionAverages
+                ? (Object.entries(selected.dimensionAverages) as [keyof ScoreDimensions, number][]).map(([key, value]) => (
+                    <span key={key}>
+                      {DIMENSION_LABELS[key]} {value}
+                    </span>
+                  ))
+                : "暂无维度数据"}
+            </div>
+          </section>
+
+          <section className="section-block">
+            <div className="section-heading">
+              <h2>常错词</h2>
+            </div>
+            <div className="score-strip">
+              {(selected.commonWrongWords ?? []).length
+                ? selected.commonWrongWords?.map((word) => <span key={word}>{word}</span>)
+                : "暂无明显错词"}
             </div>
           </section>
 
